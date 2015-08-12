@@ -117,6 +117,11 @@ function ExplosionParticle:draw()
 end
 
 
+local explosionSoundData = love.sound.newSoundData("media/explosion.ogg")
+function playExplosionSound()
+	local source = love.audio.newSource(explosionSoundData)
+	love.audio.play(source)
+end
 
 function makeExplosion(x, y)
 	Boom(x, y)
@@ -129,6 +134,7 @@ function makeExplosion(x, y)
 			y + math.random(-10, 10))
 	end
 	ExplosionParticle(x, y)
+	playExplosionSound()
 end
 
 

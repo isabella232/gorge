@@ -99,6 +99,7 @@ function Player:update(input)
 	if input.shoot and self.shoot_delay == 0 then
 		self.shoot_delay = 10
 		Laser(self.x, self.y - 4)
+		playLaserSound()
 	end
 	if self.shoot_delay > 0 then
 		self.shoot_delay = self.shoot_delay - 1
@@ -163,6 +164,7 @@ function Laser:update()
 			for i = 1, 10 do
 				LaserParticle(w[1], w[2])
 			end
+			playLaserMissSound()
 			return "kill"
 		end
 
@@ -183,4 +185,16 @@ function Laser:draw()
 	G.setColor(255, 255, 255)
 	G.draw(self.img, self.x, self.y, 0, 4, 4, 1.5, 3)
 --	G.polygon("line", self.trans_model)
+end
+
+local laserSoundData = love.sound.newSoundData("media/laser.ogg")
+function playLaserSound()
+	local source = love.audio.newSource(laserSoundData)
+	love.audio.play(source)
+end
+
+local laserMissSoundData = love.sound.newSoundData("media/laser-miss.ogg")
+function playLaserMissSound()
+	local source = love.audio.newSource(laserMissSoundData)
+	love.audio.play(source)
 end
