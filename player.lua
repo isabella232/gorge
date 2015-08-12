@@ -98,7 +98,9 @@ function Player:update(input)
 	-- shoot
 	if input.shoot and self.shoot_delay == 0 then
 		self.shoot_delay = 10
-		Laser(self.x, self.y - 4)
+		Laser(self.x, self.y - 4,   0)
+		Laser(self.x, self.y - 4, -45)
+		Laser(self.x, self.y - 4,  45)
 		playLaserSound()
 	end
 	if self.shoot_delay > 0 then
@@ -147,15 +149,26 @@ Laser = Object:new {
 	img = G.newImage("media/laser.png"),
 	model = { -2, -10, 2, -10, 2, 10, -2, 10 }
 }
-function Laser:init(x, y)
+function Laser:init(x, y, dir)
 	table.insert(self.list, self)
 	self.x = x
 	self.y = y
+	self.dir = dir
 	self.trans_model = {}
 end
 function Laser:update()
 	for i = 1, 4 do
-		self.y = self.y - 4
+		if self.dir == 0 then
+			self.y = self.y - 4
+		end
+		if self.dir == -45 then
+			self.y = self.y - 2
+			self.x = self.x - 2
+		end
+		if self.dir ==  45 then
+			self.y = self.y - 2
+			self.x = self.x + 2
+		end
 		if self.y < -300 then return "kill" end
 		transform(self)
 
