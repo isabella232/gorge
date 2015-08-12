@@ -13,6 +13,7 @@ function RocketEnemy:init(rand, x, y, wall)
 	self.vy = 0
 	self.nx = 0
 	self.ny = 0
+	self.rocketSound = nil
 	if wall == "up"		then self.ny =1  end
 	if wall == "down"	then self.ny =-1  end
 	if wall == "left"	then self.nx =1  end
@@ -20,6 +21,10 @@ function RocketEnemy:init(rand, x, y, wall)
 	self.ang = math.atan2(-self.nx, -self.ny)
 	transform(self)
 	self.active = false
+end
+function RocketEnemy:hit(x)
+	Enemy.hit(self, x)
+	if self.rocketSound then self.rocketSound:stop() end
 end
 function RocketEnemy:subUpdate()
 	self.y = self.y + game.walls.speed
@@ -33,6 +38,7 @@ function RocketEnemy:subUpdate()
 			local cross = self.nx * dy - self.ny * dx
 			if math.abs(cross) < 50 then
 				self.active = true
+				self.rocketSound = playRocketSound()
 			end
 		end
 	end
@@ -49,6 +55,17 @@ function RocketEnemy:subUpdate()
 		self.y = self.y + self.vy
 		transform(self)
 		local d, n, w = game.walls:checkCollision(self.trans_model)
-		if d > 0 then self:hit(self.shield) end
+		if d > 0 then
+		    self:hit(self.shield)
+	    end
 	end
 end
+
+local rocketSoundData = love.sound.newSoundData("media/rocket.ogg")
+function playRocketSound()
+	local source = love.audio.newSource(rocketSoundData)
+	love.audio.play(source)
+	return source
+end
+
+
