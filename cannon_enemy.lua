@@ -1,5 +1,7 @@
 local G = love.graphics
 
+local cannonSoundData = love.sound.newSoundData("media/quietsch.ogg")
+
 CannonEnemy = Enemy:new {
 	shield = 1,
 	score = 300,
@@ -19,6 +21,7 @@ function CannonEnemy:init(rand, x, y, wall)
 	transform(self)
 	self.cannon_ang = self.ang + self.rand.float(-1.3, 1.3)
 	self.delay = self.rand.int(100, 150)
+	self.cannonSound = love.audio.newSource(cannonSoundData)
 end
 function CannonEnemy:subUpdate()
 	self.y = self.y + game.walls.speed
@@ -36,11 +39,15 @@ function CannonEnemy:subUpdate()
 		local speed = 0.05
 		local d = (self.cannon_ang - ang + math.pi * 3) % (2 * math.pi) - math.pi
 
-
-		if     d >  speed then self.cannon_ang = self.cannon_ang - speed
-		elseif d < -speed then self.cannon_ang = self.cannon_ang + speed
+		if     d >  speed then
+			self.cannon_ang = self.cannon_ang - speed
+			self.cannonSound:play()
+		elseif d < -speed then
+			self.cannon_ang = self.cannon_ang + speed
+			self.cannonSound:play()
 		else
 			self.cannon_ang = self.cannon_ang - d
+			self.cannonSound:stop()
 			if self.delay == 0 then
 				self.delay = self.rand.int(100, 150)
 				local l = (dx*dx + dy*dy) ^ 0.5
@@ -49,6 +56,8 @@ function CannonEnemy:subUpdate()
 				Bullet(self.x + dx * 16, self.y + dy * 16, dx * 4, dy * 4)
 			end
 		end
+	else
+		self.cannonSound:stop()
 	end
 	if self.delay > 0 then
 		self.delay = self.delay - 1
